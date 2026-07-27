@@ -8,3 +8,9 @@ GUI for 4.2" Pico-ePaper-4.2 400x300 Pixel display
 ├─ weather.py
 ├─ gui.py
 └─ icons.py
+
+
+https://www.amazon.com/Waveshare-4-2inch-Display-Raspberry-Interface/dp/B09B3LGKHJ
+
+https://www.amazon.com/dp/B0DP54FWX1
+
