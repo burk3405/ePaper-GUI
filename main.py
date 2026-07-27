@@ -19,7 +19,7 @@ def main():
         if now - last_update >= UPDATE_INTERVAL:
             weather = fetch_weather()
             gui.draw_weather(weather)
-            # Use partial update for subsequent refreshes
+            # Uses the driver's safe full-refresh fallback.
             gui.partial_update_region(0, 0, 400, 300)
             last_update = now
 
