@@ -6,10 +6,10 @@ three-hour forecast periods, using the OpenWeather 5-day / 3-hour forecast API.
 
 ## What you need
 
-- Waveshare Pico-ePaper-4.2 display
-- Raspberry Pi Pico **W** (recommended) running MicroPython
+- [Waveshare Pico-ePaper-4.2 display](https://www.amazon.com/Waveshare-4-2inch-Display-Raspberry-Interface/dp/B09B3LGKHJ)
+- [Raspberry Pi Pico **W** (recommended) running MicroPython](https://www.amazon.com/dp/B0DP54FWX1)
 - Wi-Fi network with Internet access
-- OpenWeather account and API key
+- [OpenWeather account and API key](https://openweathermap.org/)
 - USB data cable and a MicroPython upload tool, such as Thonny or mpremote
 
 A standard original Pico can drive the display but has no onboard Wi-Fi. To
