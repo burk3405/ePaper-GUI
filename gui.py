@@ -22,11 +22,27 @@ class WeatherGUI:
     def draw_header(self, title):
         self.fb.fill_rect(0, 0, EPD_WIDTH, 30, WHITE)
         self.fb.rect(0, 0, EPD_WIDTH, 30, BLACK)
-        self.fb.text(title, 10, 10, BLACK)
+        self.fb.text(title[:47], 10, 10, BLACK)
+
+    def draw_temperature(self, label, x, y, temperature, unit, decimals=1):
+        value = ("{:." + str(decimals) + "f}").format(temperature)
+        text = "{}{}".format(label, value)
+        self.fb.text(text, x, y, BLACK)
+
+        # MicroPython's built-in font has no degree glyph. Draw a small outline
+        # circle immediately after the numeric value, then print the unit.
+        degree_x = x + len(text) * 8 + 1
+        degree_y = y + 2
+        self.fb.pixel(degree_x, degree_y, BLACK)
+        self.fb.pixel(degree_x - 1, degree_y + 1, BLACK)
+        self.fb.pixel(degree_x + 1, degree_y + 1, BLACK)
+        self.fb.pixel(degree_x, degree_y + 2, BLACK)
+        self.fb.text(unit, degree_x + 5, y, BLACK)
 
     def draw_weather(self, weather):
         self.clear_fb(WHITE)
-        self.draw_header(weather["location"] if weather else "Weather Dashboard")
+        header = "{} | {}".format(weather["location"], weather["updated_at"]) if weather else "Weather Dashboard"
+        self.draw_header(header)
 
         if not weather:
             self.fb.text("No data", 10, 50, BLACK)
@@ -36,23 +52,21 @@ class WeatherGUI:
             self.fb, 10, 38, weather["condition_id"], weather["icon"]
         )
 
-        temp_str = "{:.1f}".format(weather["temp"])
-        feels_str = "{:.1f}".format(weather["feels_like"])
-        self.fb.text("Now: {}°".format(temp_str), 70, 44, BLACK)
-        self.fb.text("Feels: {}°".format(feels_str), 70, 59, BLACK)
+        self.draw_temperature("Now: ", 70, 44, weather["temp"], weather["temperature_unit"])
+        self.draw_temperature("Feels: ", 70, 59, weather["feels_like"], weather["temperature_unit"])
         self.fb.text(weather["description"][:34], 70, 74, BLACK)
 
         self.fb.text("Humidity: {}%".format(weather["humidity"]), 10, 108, BLACK)
-        self.fb.text("Wind: {:.1f}".format(weather["wind"]), 10, 123, BLACK)
+        self.fb.text("Wind: {:.1f} {}".format(weather["wind"], weather["wind_unit"]), 10, 123, BLACK)
 
         self.fb.hline(0, 142, EPD_WIDTH, BLACK)
-        self.fb.text("3-hour forecast (UTC)", 10, 150, BLACK)
+        self.fb.text("3-hour forecast ({})".format(weather["timezone_label"]), 10, 150, BLACK)
         for index, item in enumerate(weather["forecast"][:4]):
             x = 10 + index * 97
             self.fb.text(item["time"], x, 166, BLACK)
             draw_weather_icon(self.fb, x, 178, item["condition_id"], item["icon"])
-            self.fb.text("{}°".format(int(item["temp"] + 0.5)), x, 233, BLACK)
-            self.fb.text("POP {}%".format(item["pop"]), x, 248, BLACK)
+            self.draw_temperature("", x, 233, item["temp"], weather["temperature_unit"], decimals=0)
+            self.fb.text("Rain {}%".format(item["pop"]), x, 248, BLACK)
 
         self.fb.hline(0, EPD_HEIGHT - 20, EPD_WIDTH, BLACK)
         self.fb.text("OpenWeather: current + 5-day data", 10, EPD_HEIGHT - 15, BLACK)

@@ -8,8 +8,8 @@ three-hour forecast periods, using the OpenWeather 5-day / 3-hour forecast API.
 
 - [Waveshare Pico-ePaper-4.2 display](https://www.amazon.com/Waveshare-4-2inch-Display-Raspberry-Interface/dp/B09B3LGKHJ)
 - [Raspberry Pi Pico **W** (recommended) running MicroPython](https://www.amazon.com/dp/B0DP54FWX1)
-- Wi-Fi network with Internet access
 - [OpenWeather account and API key](https://openweathermap.org/)
+- Wi-Fi network with Internet access
 - USB data cable and a MicroPython upload tool, such as Thonny or mpremote
 
 A standard original Pico can drive the display but has no onboard Wi-Fi. To
@@ -34,8 +34,12 @@ assignment. If the board is not attached directly to the Pico headers, use this
 | BUSY | GP13 | Display busy output |
 
 When mounting the board directly, follow the direction indicator printed next
-to the Pico-ePaper USB logo. Do not use the GP2–GP7 mapping from generic
-Waveshare examples: it will not communicate with this board.
+to the Pico-ePaper USB logo and press the header fully into place. The display
+has no separate power connector: it receives power through those header pins
+while the Pico is powered by USB. For a cable-mounted board, VCC must connect
+to the Pico's `VSYS` pin and GND must connect to GND. Do not use the GP2–GP7
+mapping from generic Waveshare examples: it will not communicate with this
+board.
 
 ## Set up OpenWeather
 
@@ -57,7 +61,8 @@ next four forecast periods while retaining all five days in the returned data.
 
 1. Flash a current Pico W MicroPython UF2 to the board, if needed.
 2. Copy every project Python file to the Pico filesystem root:
-   `config.py`, `epd4in2.py`, `icons.py`, `weather.py`, `gui.py`, and `main.py`.
+   `config.py`, `Pico-ePaper-4.2-B.py`, `epd4in2.py`, `icons.py`, `weather.py`,
+   `gui.py`, and `main.py`.
 3. Confirm that `main.py` is named exactly `main.py`; MicroPython runs it after
    booting.
 4. Reset the Pico.
@@ -65,6 +70,19 @@ next four forecast periods while retaining all five days in the returned data.
 A full e-paper refresh typically takes several seconds and flickers. This is
 normal. The project intentionally uses full refreshes because Waveshare's 4.2"
 partial-refresh example is unreliable and can leave ghosting.
+
+### Run headless after power-on
+
+MicroPython automatically runs a file named `main.py` from the filesystem root
+every time the Pico receives power. In Thonny, use **File → Save as**, select
+the **MicroPython device**, and save the finished dashboard entry point as
+exactly `main.py`. Confirm that all of the files listed above, particularly
+`config.py`, `epd4in2.py`, and `Pico-ePaper-4.2-B.py`, are also stored on the
+device rather than only on the computer.
+
+After verifying one successful run in Thonny, disconnect it and power the Pico
+from any suitable USB power adapter or USB power bank. It will boot, connect to
+Wi-Fi, fetch weather, and refresh the display without Thonny or a computer.
 
 ## Display and API behavior
 
@@ -85,7 +103,7 @@ OpenWeather's precipitation probability (`pop`).
 
 | Symptom | Check |
 | --- | --- |
-| `e-paper BUSY timeout` | Check GP8–GP13 wiring, GND, and a stable power connection. |
+| `e-paper BUSY timeout` | Confirm the supplied adaptive driver is uploaded, then check GP8–GP13 wiring, GND, and a stable power connection. |
 | Screen stays unchanged | Verify the board direction or cable mapping. A refresh should visibly flicker. |
 | Screen says `No data` | Check Pico W Wi-Fi credentials, Internet access, OpenWeather key activation, and location values. The display itself is working. |
 | `ImportError: network` | This code needs a Pico W or an adapted external Wi-Fi implementation. |
@@ -99,4 +117,5 @@ OpenWeather's precipitation probability (`pop`).
 - `weather.py` — OpenWeather current and five-day forecast requests
 - `gui.py` — dashboard layout
 - `icons.py` — weather condition glyphs
-- `epd4in2.py` — Pico-ePaper-4.2 UC8176 display driver
+- `Pico-ePaper-4.2-B.py` — official Waveshare driver verified for this display
+- `epd4in2.py` — dashboard-compatible wrapper around the official display driver
